@@ -1,0 +1,44 @@
+@charset "utf-8";
+/* CSS Document */
+*._FF0000{color:#FF0000}
+*._0000FF{color:#0000FF}
+*.poeLink{color:blue;cursor:pointer;}
+.clearfix{zoom:1;}
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;}
+.tourSection_niuren{ width:795px;/* border:2px solid #B1DB7F;*/  margin:0 auto; text-align:left;  font:12px/1.5 Tahoma,arial,宋体,sans-serif; color:#404040; text-align:left; overflow:hidden;}
+.tourSection_niuren .tourContent_new{ border:1px solid #fff;}
+.tourSection_niuren .day_title_new{ color:#f60; font-size:13px;}
+
+.tourSection_niuren .day_title_new h3{ font-weight:700; margin:0 0 10px; font-size:100%; zoom:1; float:none; padding:0!important; background:none!important; width:100%!important; color:#f60!important;}
+.tourSection_niuren .day_title_new h3:after{content:".";display:block;height:0;clear:both;visibility:hidden;}
+.tourSection_niuren .day_title_new h3 em{ font-size:14px; background:url(http://img1.tuniucdn.com/ui/v2/images/diNtian.png) 0 4px no-repeat; float:left; font-weight:700; padding-left:10px; margin-right:10px; font-style:normal;}/**/
+.tourSection_niuren .day_title_new h3 div{ padding-left:20px; font-size:14px; display:block; float:left; font-weight:normal; height:auto; width:auto; word-wrap:break-word; word-break:break-all;}/**/
+.tourSection_niuren .day_title_new h3 div img{ margin:0 5px;}
+.tourSection_niuren .day_title_new div.tour_line{ border:1px solid #fff; line-height:190%; color:#404040; padding:0 0 5px 80px; margin:0; word-wrap:break-word; word-break:break-all;}
+
+.tourSection_niuren .time_box_inner{ border-top:1px dashed #ddd; border-left:1px solid #fff; border-right:1px solid #fff; border-bottom:1px solid #fff; padding:10px 0 0 0; font-size:13px;}
+.tourSection_niuren .time_box_inner .time_num{ float:left; width:55px; padding-right:15px;/* font-weight:700; color:#09f;*/}
+.tourSection_niuren .time_box_inner .time_num p{ margin:0; padding:0; word-wrap: break-word; word-break:break-all;}
+.tourSection_niuren .time_box_inner .time_num .tour_con{ background:none; margin:0; padding:0;}
+.tourSection_niuren .time_box_inner .time_do_new{ width:720px; float:left;}
+.tourSection_niuren .time_box_inner .time_do_new .tour_description{ border:1px solid #fff; font-size:100%; margin:0 0 10px 0; padding:0 0 0 10px; word-wrap:break-word; word-break:break-all;}
+.tourSection_niuren .time_box_inner .time_do_new .tour_con_h4{ background:#F0FDE9; color:#f60; padding:10px; border:1px solid #fff; font-weight:700; font-size:100%; word-wrap:break-word; word-break:break-all;}/**/
+.tourSection_niuren .tour_food{ border:1px solid #eaeaea; background:#f9f9f9; font-size:13px; padding:10px 10px 8px 10px; line-height:190%; width:698px; margin:10px 0 10px 70px;}/**/
+.tourSection_niuren .tour_food .tour_item{ border:1px solid #f9f9f9; zoom:1;}
+.tourSection_niuren .tour_food .tour_item:after{ content:".";display:block;height:0;clear:both;visibility:hidden;}
+.tourSection_niuren .tour_food .tour_item em{ font-style:normal; font-weight:700; float:left; margin-right:15px;}
+.tourSection_niuren .tour_food .tour_item div{ display:block; float:left; font-weight:normal; height:auto; width:auto; word-wrap:break-word; word-break:break-all;}
+
+.tourSection_niuren .time_box_inner .time_img_photo{ width:720px; background:#F9FEF6; padding:20px 0; margin:0 0 10px 0;}
+.tourSection_niuren .time_box_inner .time_img_photo li{ border:1px solid #F9FEF6; float:left; width:324px; margin:0 17px 10px; display:inline; overflow:hidden;}/**/
+.tourSection_niuren .time_box_inner .time_img_photo li img{ border:1px solid #979b91; padding:1px;}/**/
+.tourSection_niuren .time_box_inner .time_img_photo li div{ display:block; padding-top:10px; text-align:center; overflow:hidden;}
+.tourSection_niuren .w160{ width:160px;}
+.tourSection_niuren .w200{ width:200px;}
+.tourSection_niuren .tour_shop{ border:1px solid #fff; margin-left:70px; width:722px;}
+.tourSection_niuren .tour_shop p{ margin:0 0 5px 0;}
+.tourSection_niuren .tour_shop table{ width:720px; background:#fff; border-collapse:collapse; border-spacing:0; font-size:13px;}
+.tourSection_niuren .tour_shop table th{ background:#f8f8f8; border:1px solid #eaeaea; padding:5px 0; font-weight:700; text-align:center;}
+.tourSection_niuren .tour_shop table td{ border:1px solid #eaeaea; padding:7px; word-break:break-all;}
+
+.tourSection_niuren .tour_con{border:1px solid #fff; background:#F9FEF6; line-height:180%; padding:10px; word-wrap:break-word; word-break:break-all; width:100%;}/**/

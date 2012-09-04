@@ -1,0 +1,41 @@
+#editor_wrap{border:1px solid #b7b7b7;position:absolute;font-size:14px;}
+#editMenu{overflow:hidden;padding:1px 1px 0 1px;}
+#editMenu ul{margin:0;padding:0;background:#efefef;overflow:hidden;border-bottom:1px solid #ccc;padding:0 2px 0 2px;}
+#editMenu ul li{float:left;list-style:none;margin-top:1px;margin-bottom:2px;border:1px solid #efefef;padding:2px;}
+#editMenu ul li:hover{background:#fff;border:1px solid #ddd;}
+#editMenu ul li.actived{background:#fff;border:1px solid #ddd;}
+#editMenu ul li.disabled:hover{background:none;border:1px solid #efefef;}
+#editMenu ul li a{display:block; width:16px;height:16px;color:#333;text-decoration:none;}
+
+#remindDiv{font-size:12px;color:#333;padding:3px;background:#F2F6F9;border-bottom:1px solid #ccc;}
+#remindDiv span{margin:0 4px;}
+#remindDiv span a{text-decoration:none;color:#336699;}
+#remindDivClose{display:block;width:16px;height:16px;float:right;background:url(images/close_grey.png) no-repeat;}
+#remindDivClose:hover{background:url(images/close.png) no-repeat;}
+
+/*#editableZone{font-size:12px;color:#000;padding:2px;word-wrap:break-word;word-break:break-all;}*/
+#popWin{background:#fff;padding:4px;border:1px solid #ddd;box-shadow:1px 1px 2px rgba(0,0,0,0.2);z-index:99999;}
+#popWin .colorSetBtn{width:16px;height:16px;margin:2px;padding:0;border:1px solid #fff;cursor:pointer;}
+#popWin .colorSetBtn:hover{border:1px solid #ddd;}
+
+#linkPopBox{padding:5px;}
+#linkPopBox .popHeader{overflow:hidden;}
+#closePopBoxBtn{display:block;width:16px;height:16px;float:right;background:url(images/close_grey.png) no-repeat;}
+#closePopBoxBtn:hover{background:url(images/close.png) no-repeat;}
+#linkPopBox .popFooter{margin-top:5px;}
+
+.selectedSpan{background:#b0b0b0;color:#fff;}
+
+
+#editFooter{height:14px;font-size:12px;padding:2px;color:#333;border-top:1px solid #ddd;background:#fefefe;}
+#statusDiv{float:left;color:#666;}
+#otherFunctionDiv{float:right;}
+#otherFunctionDiv span{margin:0 4px;color:#999;}
+#otherFunctionDiv span a{text-decoration:none;color:#999;}
+
+.leftContainer{float: right;}
+.rightToolPanel{float: left;background: #f9f9f9;border-right: 1px solid #ccc;}
+.rightToolPanel ul{text-align: left;margin:20px 0 0 0;padding:0;}
+.rightToolPanel ul li{list-style: none;margin:0;padding: 4px 20px;border-top:1px solid #f9f9f9; border-bottom: 1px solid #f9f9f9;}
+.rightToolPanel ul li:hover{background: #fff;border-color:#ccc;}
+.rightToolPanel ul li a{text-decoration: none;color:#0065A5;}
