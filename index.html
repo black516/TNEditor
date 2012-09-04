@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>TNEditor tester</title>
+<script type="text/javascript" src="js/jquery-1.7.1.js"></script>
+<script type="text/javascript" src="js/TNEditor.js"></script>
+<script type="text/javascript">
+$(function() {
+	var baseEditor = new TNEditor({
+		base: ["bold", "color", "addLink", "cancelLink", "addStar", "addStar2", "editMode", "preview"],
+
+		container: $("#baseEditor"),
+		width: 600,
+		height: 400
+	});
+	baseEditor.init();
+	$('#save').click(function(){
+		$('#content').text(baseEditor.editbody.bodyEvent.getHtmlContent.call(baseEditor, null));
+	});
+	// var baseEditor2 = new TNEditor({
+	// 	base: ["bold", "color", "addLink", "cancelLink", "addStar", "addStar2", "editMode", "preview"],
+	// 	container: $("#baseEditor2"),
+	// 	width: 600,
+	// 	height: 400
+	// });
+	// baseEditor2.init();
+})
+</script>
+<style>
+#baseEditor{}
+</style>
+</head>
+
+<body>
+<div id="baseEditor" style="width:600px;height:400px;float:left;"></div>
+<div id="content" style="float:right;width:500px;font-size:12px;"></div>
+
+<div style="clear:both;margin-top:20px;">
+	<button id="save">保存</button>
+</div>
+
+<div id="baseEditor2"></div>
+
+</body>
+</html>

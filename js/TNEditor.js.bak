@@ -1,0 +1,159 @@
+/////////////////////////////////////////////////////////////////////////////
+// 这个文件是 途牛 BOSS 项目的一部分
+//
+// Copyright (c) 2012 Tuniu
+/////////////////////////////////////////////////////////////////////////////
+
+/**
+ * 功能说明：途牛项目定制编辑器
+ * @author: 周海 harry (zhouhai@tuniu.com)
+ * @version $Id: TNEditor.js 28103807 2012年04月28日 10:38:07 zh $
+ */
+function TNEditor(opt){
+	this.settings = {};
+	var defaults = {
+		width: 600,
+		height: 400
+	};
+	var self =this;
+	$.extend(this.settings, defaults, opt || {});
+	this.editbody = new editBody(this.settings);
+	this.editfooter = new editFooter(this.settings);
+	this.editmenu = new editMenu(self);
+	
+	
+	this.init();
+	this.editmenu.bindEvent();
+}
+
+TNEditor.prototype.init = function (){
+	//先加载样式表
+	$('head').append('<link type="text/css" rel="stylesheet" href="css/base.css" />');
+	var wrap = $('<div id="editor_wrap_2"></div>');
+	wrap.css({'width':this.settings.width, 'height':this.settings.height});
+	var editor = $('<div id="editor_wrap_1"></div>');
+	editor.css({'width':this.settings.width-2, 'height':this.settings.height-2});
+	var menuDOM = this.editmenu.getMenu();
+	var bodyDOM = this.editbody.getBody();
+	var footerDOM = this.editfooter.getFooter();
+	editor.append(menuDOM).append(bodyDOM).append(footerDOM);
+	this.container = this.settings.container || $(document.body);
+	wrap.append(editor);
+	this.container.append(wrap);
+}
+
+function editMenu(opt){
+	var defaults = {
+		base: ["bold", "color", "addLink", "cancelLink", "preview"],
+		imagePath : "css/images/"
+	};
+	$.extend(this, defaults, opt || {});
+	this.menuContainer = $('<div id="editMenu"></div>');
+	this.initMenu();
+}
+
+editMenu.prototype.menuInfo = {
+	baseInfo:{
+		undo:{
+			name: "撤销",
+			imgPath: "undo.png",
+			action: ""
+		},
+		redo:{
+			name: "重做",
+			imgPath: "redo.png",
+			action:""
+		},
+		bold:{
+			name: "加粗",
+			imgPath: "bold.png",
+			action:"letSelectionBold"
+		}
+	},
+	action:{
+		letSelectionBold:function(){
+			document.execCommand("bold", false, null);
+		}
+	}
+};
+editMenu.prototype.initMenu = function (){	
+	var menuItem = $('<ul></ul>');
+	for(var item = 0; item < this.base.length; item++){
+		if(typeof this.menuInfo.baseInfo[this.base[item]] !== 'undefined'){
+			var menuLi = $('<li id="'+this.base[item]+'"></li>');
+			var menuLiA = $('<a href="javascript:void(0);"></a>');
+			menuLiA.css('background','url(' + this.imagePath + this.menuInfo.baseInfo[this.base[item]].imgPath + ')');
+			menuLi.append(menuLiA);
+			menuItem.append(menuLi);
+			//menuItem.append($('<li id="'+this.base[item]+'"><a href="javascript:void(0);"><img src="' + this.imagePath + this.menuInfo.baseInfo[this.base[item]].imgPath + '" alt="' + this.menuInfo.baseInfo[this.base[item]].name + '" /></a></li>'));
+		}		
+	}
+	menuItem.append('<a id="footerTest" href="javascript:void(0);">test</a>');
+	this.menuContainer.append(menuItem);
+	return this.menuContainer;
+}
+editMenu.prototype.getMenu = function (){
+	return this.menuContainer;
+}
+editMenu.prototype.bindEvent = function (){
+	var self = this;
+	$('#footerTest').click(function (){
+		self.editfooter.setFooterMsg("123");
+	});
+	function Middle(item){
+		this.clickFunction = function(){
+			self.menuInfo.action[self.menuInfo.baseInfo[self.base[item]].action].call(self, null);
+		}
+	}
+	for(var item = 0; item < self.base.length; item++){
+		if(typeof self.menuInfo.baseInfo[self.base[item]] !== 'undefined'){
+			//var menuLi = $('<li id="'+this.base[item]+'"></li>');
+			//var menuLiA = $('<a href="javascript:void(0);"></a>');
+			//menuLiA.css('background','url(' + this.imagePath + this.menuInfo.baseInfo[this.base[item]].imgPath + ')');
+			//menuLi.append(menuLiA);
+			//menuItem.append(menuLi);
+			var middler = new Middle(item);
+			$('#' + this.base[item] + " a",self.menuContainer).click(middler.clickFunction);	
+		}		
+	}
+
+}
+
+function editBody(opt){
+	this.settings = {};
+	var defaults = {
+
+	};
+	$.extend(this.settings, defaults, opt || {});
+	this.editableZone = $('<div id="editableZone" contenteditable="true"></div>');
+	this.bodyContainer = $('<div id="bodyContainer"></div>');
+	this.bodyContainer.append(this.editableZone);
+	this.init();
+}
+editBody.prototype.init = function (){
+	this.bodyContainer.css('height',this.settings.height);
+	this.editableZone.css('height',this.settings.height);
+}
+editBody.prototype.getBody = function (){
+	return this.bodyContainer;
+}
+
+function editFooter(opt){
+	this.settings = {};
+	var defaults = {
+
+	};
+	$.extend(this.settings, defaults, opt || {});
+	this.footerContainer = $('<div id="editFooter"></div>');
+	this.init();
+}
+editFooter.prototype.init = function (){
+	this.footerContainer.css('width',this.settings.width-6);
+}
+editFooter.prototype.getFooter = function (){
+	return this.footerContainer;
+}
+
+editFooter.prototype.setFooterMsg = function (msg){
+	this.footerContainer.text(msg);
+}
