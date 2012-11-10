@@ -424,7 +424,7 @@ function editBody(opt){
 	};
 	$.extend(this, defaults, opt || {});
 	this.baseSection = $('<iframe class="TN_iframe" frameborder="0" width="100%" height="100%"></iframe>');
-	this.bodyContainer = $('<div id="bodyContainer"></div>');
+	this.bodyContainer = $('<div id="bodyContainer" style="overflow:hidden;"></div>');
 	this.leftContainer = $('<div class="leftContainer"></div>');
 	this.rightToolPanel = $('<div class="rightToolPanel"></div>')
 	this.bodyContainer.append(this.leftContainer).append(this.rightToolPanel);

@@ -1,7 +1,12 @@
 function FNREditor(opt){
 	var defaults = {
-		base: ["addBus", "addPlane", "addTrain", "addShip",  "addunniurenTrip",  "addunniurenDetail",  "addunniurenImg", "addunniurenDinning"],
+		base: ["addBus", "addPlane", "addTrain", "addShip",  "addunniurenTrip",  "addunniurenDetail",  "addunniurenImg", "addunniurenDinning", "addunniurenAccommodation"],
 	};
+
+	//把所有需要配置的东西都写在这里：
+
+
+	
 	// $.extend(true, opt, defaults);
 	$.merge(opt.base,defaults.base);
 	TNEditor.call(this, opt);
@@ -109,33 +114,34 @@ FNREditor.prototype.unniurenMenuInfo = {
 		},
 		addBusAction: function(){
 			var self = this;
-			var imgURL = self.imagePath + self.menuInfo.baseInfo.addBus.imgPath;
-			self.menuInfo.action.addIconAction(imgURL, self);
+			var imgURL = self.editmenu.imagePath + self.editmenu.menuInfo.baseInfo.addBus.imgPath;
+			self.editmenu.menuInfo.action.addIconAction(imgURL, self);
 		},
 		addPlaneAction: function(){
 			var self = this;
-			var imgURL = self.imagePath + self.menuInfo.baseInfo.addPlane.imgPath;
-			self.menuInfo.action.addIconAction(imgURL, self);
+			var imgURL = self.editmenu.imagePath + self.editmenu.menuInfo.baseInfo.addPlane.imgPath;
+			self.editmenu.menuInfo.action.addIconAction(imgURL, self);
 		},
 		addTrainAction: function(){
 			var self = this;
-			var imgURL = self.imagePath + self.menuInfo.baseInfo.addTrain.imgPath;
-			self.menuInfo.action.addIconAction(imgURL, self);
+			var imgURL = self.editmenu.imagePath + self.editmenu.menuInfo.baseInfo.addTrain.imgPath;
+			self.editmenu.menuInfo.action.addIconAction(imgURL, self);
 		},
 		addShipAction: function(){
 			var self = this;
-			var imgURL = self.imagePath + self.menuInfo.baseInfo.addShip.imgPath;
-			self.menuInfo.action.addIconAction(imgURL, self);
+			var imgURL = self.editmenu.imagePath + self.editmenu.menuInfo.baseInfo.addShip.imgPath;
+			self.editmenu.menuInfo.action.addIconAction(imgURL, self);
 		},
 		addIconAction: function(imgURL, self){
 			//加入交通工具的插入点的判断，如果不是在行程里不让插入
-			//var self = this;
+			// var self = this;
 			var sel = self.editbody.cw.document.getSelection();
 			var range = sel.getRangeAt(0);
-			//self.editbody.cw.document.execCommand("insertImage",false,imgURL);
-			var img = document.createElement('img');
-			img.src = imgURL;
-			range.surroundContents(img);
+			self.editbody.cw.document.execCommand("insertImage",false,imgURL);
+			//插入图片的另一种方式
+			// var img = document.createElement('img');
+			// img.src = imgURL;
+			// range.surroundContents(img);
 			$(self.editbody.cw.document.activeElement).focus();
 			range.collapse(false);
 			range.setEndAfter(img);
@@ -175,39 +181,39 @@ FNREditor.prototype.unniurenMenuInfo = {
 			self.bindDelEvent.delEvent.call(self, em, trips, self.unMenu.tripDelNode, 70, 0);
 			self.bindPaste($(".day_title_new div",trip));
 		},
-		addunniurenDetailAction: function(e, cnt){
+		addunniurenDetailAction: function(e, cnt, index){
 			var self = this;
 			var detail = self.unniurentpl.detail();
 			detail = $(detail);
 
-			if(arguments.length == 2 && cnt){
-				$('.tour_line_f', detail).html(cnt);
-			}
-
-			if($('.tourContent_new', self.editbody.cw.document).length <= 0){
-				self.editfooter.setStatusMsg("请先添加行程");
-			}else if(self.editbody.cw.document.activeElement.nodeName == 'BODY'){
-				console.debug(self);
-				self.editfooter.setStatusMsg("请先定位光标，选择要插入的位置");
+			if(arguments.length == 3 && cnt){
+				detail.html(cnt);
+				$(".day_title_new h3",$(".tourContent_new",self.editbody.cw.document).eq(index)).after(detail);
 			}else{
-
-				if($(self.editbody.cw.document.activeElement).hasClass('tour_line_f')){
-					$(self.editbody.cw.document.activeElement).after(detail);
+				if($('.tourContent_new', self.editbody.cw.document).length <= 0){
+					self.editfooter.setStatusMsg("请先添加行程");
+				}else if(self.editbody.cw.document.activeElement.nodeName == 'BODY'){
+					console.debug(self);
+					self.editfooter.setStatusMsg("请先定位光标，选择要插入的位置");
 				}else{
-					$(self.editbody.cw.document.activeElement).parentsUntil('.day_title_new').last().parent().append(detail);
+					if($(self.editbody.cw.document.activeElement).hasClass('tour_line_f')){
+						$(self.editbody.cw.document.activeElement).after(detail);
+					}else{
+						$(self.editbody.cw.document.activeElement).parentsUntil('.day_title_new').last().parent().append(detail);
+					}
+					var sel = self.editbody.cw.document.getSelection();
+					var range = sel.getRangeAt(0);
+					detail.focus();
+					range.selectNodeContents(detail[0]);
+					//光标强制刷新
+					sel.removeAllRanges();
+					sel.addRange(range);
+					detail.css('cursor','text');
 				}
-				var sel = self.editbody.cw.document.getSelection();
-				var range = sel.getRangeAt(0);
-				detail.focus();
-				range.selectNodeContents(detail[0]);
-				//光标强制刷新
-				sel.removeAllRanges();
-				sel.addRange(range);
-				detail.css('cursor','text');
-				self.bindDelEvent.delEvent.call(self, detail, detail, self.unMenu.commonDelNode, 32, 2);
-				self.bindPaste(detail);
 			}
 
+			self.bindDelEvent.delEvent.call(self, detail, detail, self.unMenu.commonDelNode, 32, 0);
+			self.bindPaste(detail);
 		},
 		addunniurenImgAction: function(e, cnt, index){
 			var self = this;
@@ -225,7 +231,7 @@ FNREditor.prototype.unniurenMenuInfo = {
 				$.ajax({
 					type: "POST",
 					dataType: "json",
-					url: "/editor/TNEditor/imglist.js?r="+Math.random(),
+					url: "/myProject/TNEditor/imglist.js?r="+Math.random(),
 					data: this.getHtmlContentByDay(),
 					//url: "/main.php?r="+Math.random(),
 					//data: {
@@ -261,7 +267,8 @@ FNREditor.prototype.unniurenMenuInfo = {
 							if (typeof(data[i+1]) != 'undefined' && data[i+1].length>0){
 								$.each(data[i+1],function(i,m){
 									var li = $(self.unniurentpl.imgList());
-									var img = $("<img id='"+m.id+"' src='"+m.imgUrl+"' alt='" + m.address + "' onmouseout='hidePreview(event);' onmouseover='showPreview(event, " + m.id + ", 0);' />");
+									// var img = $("<img id='"+m.id+"' src='"+m.imgUrl+"' alt='" + m.address + "' onmouseout='hidePreview(event);' onmouseover='showPreview(event, " + m.id + ", 0);' />");
+									var img = $("<img id='"+m.id+"' src='"+m.imgUrl+"' alt='" + m.address + "' />");
 									$("a",li).append(img);
 									var imglink = $('<a class="cgrey" target="_blank" href="' + self.imageHref + m.id + '">' + m.name + '</a>');
 									$("div",li).append(imglink);
@@ -278,11 +285,95 @@ FNREditor.prototype.unniurenMenuInfo = {
 				}
 			}
 		},
-		addunniurenDiningAction: function(){
+		addunniurenDiningAction: function(e, cnt, index){
+			var self = this;
+			var foodAndSleep = $(self.unniurentpl.poe_Tourfood());
+			var food = $('');
 
+			if(arguments.length == 3 && cnt){
+				foodAndSleep.html(cnt);
+				$(".day_title_new",$(".tourContent_new",self.editbody.cw.document).eq(index)).after(foodAndSleep);
+				food = $("div.tour_item",foodAndSleep);
+				if(food.size() > 0){
+					$.each(food,function(i,n){
+						$('div', $(n)).attr('contenteditable','true');
+						self.bindDelEvent.delEvent.call(self, $(n), $(n), self.unMenu.commonDelNode, 32, 0);
+						self.bindPaste($('div',$(n)));
+					})
+				}
+			self.bindDelEvent.delEvent.call(self, foodAndSleep, foodAndSleep, self.unMenu.commonDelNode, 32, 2);
+			}else{
+				food = $(self.unniurentpl.poe_Dining());
+				var activeElement = self.editbody.cw.document.activeElement;
+
+				if($('.tourContent_new', self.editbody.cw.document).length <= 0){
+					self.editfooter.setStatusMsg("请先添加行程");
+				}else if(activeElement.nodeName == 'BODY'){
+					console.debug(self);
+					self.editfooter.setStatusMsg("请先定位光标，选择要插入的位置");
+				}else{
+					var activeDayContent = $(activeElement).parents('.tourContent_new');
+					var foodAndSleepWrapper = activeDayContent.children('.tour_food_f');
+					if(foodAndSleepWrapper.length > 0){
+						foodAndSleepWrapper.append(food);
+					}else{
+						activeDayContent.append(foodAndSleep);
+						activeDayContent.children('.tour_food_f').append(food);
+					}
+					
+					var sel = self.editbody.cw.document.getSelection();
+					var range = sel.getRangeAt(0);
+					//这里相当坑爹，要注意这里的focus是必要的，这关系到下面selectNodeContents的高亮是否是蓝色。规则应该是设置了contenteditable为true的最近父节点
+					$('div',food).focus();
+					range.selectNodeContents($('.po_dining_diy', food)[0]);
+					//光标强制刷新
+					sel.removeAllRanges();
+					sel.addRange(range);
+					food.css('cursor','text');
+					self.bindDelEvent.delEvent.call(self, food, food, self.unMenu.commonDelNode, 32, 0);
+					self.bindDelEvent.delEvent.call(self, foodAndSleep, foodAndSleep, self.unMenu.commonDelNode, 32, 2);
+					self.bindPaste($('div',food));
+				}
+			}
 		},
 		addunniurenAccommodationAction: function(){
+			var self = this;
+			var foodAndSleep = $(self.unniurentpl.poe_Tourfood());
+			var sleep = $(self.unniurentpl.poe_Accommodation());
+			var activeElement = self.editbody.cw.document.activeElement;
 
+			// if(arguments.length == 2 && cnt){
+			// 	$('.tour_line_f', food).html(cnt);
+			// }
+
+			if($('.tourContent_new', self.editbody.cw.document).length <= 0){
+				self.editfooter.setStatusMsg("请先添加行程");
+			}else if(activeElement.nodeName == 'BODY'){
+				console.debug(self);
+				self.editfooter.setStatusMsg("请先定位光标，选择要插入的位置");
+			}else{
+				var activeDayContent = $(activeElement).parents('.tourContent_new');
+				var foodAndSleepWrapper = activeDayContent.children('.tour_food_f');
+				if(foodAndSleepWrapper.length > 0){
+					foodAndSleepWrapper.append(sleep);
+				}else{
+					activeDayContent.append(foodAndSleep);
+					activeDayContent.children('.tour_food_f').append(sleep);
+				}
+				
+				var sel = self.editbody.cw.document.getSelection();
+				var range = sel.getRangeAt(0);
+				//这里相当坑爹，要注意这里的focus是必要的，这关系到下面selectNodeContents的高亮是否是蓝色。规则应该是设置了contenteditable为true的最近父节点
+				$('div',sleep).focus();
+				range.selectNodeContents($('div',sleep)[0]);
+				//光标强制刷新
+				sel.removeAllRanges();
+				sel.addRange(range);
+				sleep.css('cursor','text');
+				self.bindDelEvent.delEvent.call(self, sleep, sleep, self.unMenu.commonDelNode, 32, 0);
+				self.bindDelEvent.delEvent.call(self, foodAndSleep, foodAndSleep, self.unMenu.commonDelNode, 32, 2);
+				self.bindPaste($('div',sleep));
+			}
 		},
 		addunniurenShoppingStoreAction: function(){
 
@@ -390,7 +481,7 @@ FNREditor.prototype.refreshDay = function (){
 	//重新刷一遍天数，保证天数顺序
 	var self = this;
 	$('.rapidList',self.editbody.rightToolPanel).empty();
-	$('.tourContent_new em', self.editbody.cw.document).each(function(i,n){
+	$('.tourContent_new > .day_title_new em', self.editbody.cw.document).each(function(i,n){
 		var day = $(n).text().replace(/{day}|\d+/g, i + 1);
 		
 		$(n).text(day);
@@ -430,7 +521,7 @@ FNREditor.prototype.unBodyEvent = {
 		var section = null;
 		if (flag){
 			section = $('.' + self.editbody.bodyInfo.section,self.editbody.cw.document).parent().clone();
-			$('.' + self.editbody.bodyInfo.section + '',section).removeAttr('contenteditable');
+			$('div[contenteditable=true]', section).removeAttr('contenteditable');
 		}else{
 			section = $('.' + self.editbody.bodyInfo.section,self.editbody.cw.document).clone();
 		}
@@ -461,11 +552,15 @@ FNREditor.prototype.reloadEvent = function(content){
 		}
 		var detail = $('.tour_line_f', $(n));
 		if(detail.length > 0){
-			self.unniurenMenuInfo.action.addunniurenDetailAction.call(self, null, detail.html());
+			self.unniurenMenuInfo.action.addunniurenDetailAction.call(self, null, detail.html(), i);
 		}
 		var img = $('.time_s_photo', $(n));
 		if(img.length > 0){
 			self.unniurenMenuInfo.action.addunniurenImgAction.call(self, null, img.html(), i);
+		}
+		var foodAndSleep = $('.tour_food_f', $(n));
+		if(foodAndSleep.length > 0){
+			self.unniurenMenuInfo.action.addunniurenDiningAction.call(self, null, foodAndSleep.html(), i);
 		}
 	});
 }
