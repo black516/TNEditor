@@ -10,6 +10,8 @@
  * @version $Id: TNEditor.js 28103807 2012年04月28日 10:38:07 zh $
  */
 
+
+
 function TNEditor(opt){
 	var defaults = {
 		width: 600,
@@ -18,14 +20,18 @@ function TNEditor(opt){
 	};
 	var self =this;
 	$.extend(true, this, defaults, opt || {});
-	//this.editbody = new editBody(this);
-	//this.loadBody();
-	//this.editfooter = new editFooter(self);
-	//this.loadFooter();
-	//this.editfooter.bindEvent();
-	//this.editmenu = new editMenu(self);
-	//this.loadMenu();
-	//this.editmenu.bindEvent();
+	
+	/*这里放置编辑器的各种配置*/
+	this.properties = {
+		url:{
+			editorCss:"css/base.css",
+			editableBoxCss:"css/editableIframe.css"
+		},
+		path:{
+			imagePath:"css/images/"
+		}
+	};
+
 	//$('.baseSection',self.editbody.cw.document).focus();//根据实际情况添加
 	this.editMode = "doc";
 	this.editorKey = this.container.attr('id');
@@ -54,7 +60,7 @@ TNEditor.prototype.init = function(){
 
 TNEditor.prototype.loadBody = function (){
 	//先加载样式表
-	$('head').append('<link type="text/css" rel="stylesheet" href="css/base.css" />');
+	$('head').append('<link type="text/css" rel="stylesheet" href="' + this.properties.url.editorCss + '" />');
 	var editor = $('<div id="editor_wrap"></div>');
 	//editor.css({'width':this.width-2, 'height':this.height-2});
 	editor.css('width',this.width-2);
@@ -114,7 +120,7 @@ TNEditor.prototype.bindPaste = function(dom){
 
 function editMenu(opt){
 	var defaults = {
-		imagePath : "css/images/",
+		imagePath : opt.properties.path.imagePath,
 		color: ["#ff0000","#0000ff","#000"],
 		colorName: ["红色","蓝色","黑色"]
 	};
@@ -284,7 +290,7 @@ editMenu.prototype.menuInfo = {
 		preview: function(){
 			var self = this;
 			var win = window.open("about:blank");
-			win.document.write('<html><head><link type="text/css" rel="stylesheet" href="css/base.css" /></head><body>'+self.editmenu.editbody.bodyEvent.getHtmlContent.call(self.editmenu, true)+'</body></html>');
+			win.document.write('<html><head><link type="text/css" rel="stylesheet" href="'+this.properties.url.editorCss+'" /></head><body>'+self.editmenu.editbody.bodyEvent.getHtmlContent.call(self.editmenu, true)+'</body></html>');
 			win.document.close();
 		},
 		editModeTrans: function(e){
@@ -478,7 +484,7 @@ editBody.prototype.setbaseSection = function() {
 	this.cw.document.open();
 	this.cw.document.write('<div contenteditable="true" spellcheck="false" class="' + self.bodyInfo.section + '" style="word-wrap:break-word;word-break:break-all;font-size:12px;cursor:text;outline:none;"></div>');
 	$('.' + self.bodyInfo.section + '',this.cw.document).css('min-height',this.height-76);
-	$('head',this.cw.document).append('<link rel="stylesheet" href="css/editableIframe.css" />');
+	$('head',this.cw.document).append('<link rel="stylesheet" href="'+this.properties.url.editableBoxCss+'" />');
 	this.cw.document.close();
 }
 //editBody.prototype.getHtmlContent = function(flag){

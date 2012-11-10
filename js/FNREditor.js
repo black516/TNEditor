@@ -2,17 +2,22 @@ function FNREditor(opt){
 	var defaults = {
 		base: ["addBus", "addPlane", "addTrain", "addShip",  "addunniurenTrip",  "addunniurenDetail",  "addunniurenImg", "addunniurenDinning", "addunniurenAccommodation"],
 	};
-
-	//把所有需要配置的东西都写在这里：
-
-
 	
 	// $.extend(true, opt, defaults);
 	$.merge(opt.base,defaults.base);
 	TNEditor.call(this, opt);
-	//TNEditor.prototype.init.call(this);
-	//arguments.callee.prototype.constructor.prototype.init();
-	//this.prototype = new TNEditor(opt);
+	/*这里放置编辑器的各种配置*/
+	this.properties = {
+		url:{
+			editorCss:"css/base.css",
+			editableBoxCss:"css/unniurenforedit.css",
+			imgListUrl:"/myProject/TNEditor/imglist.js"
+		},
+		path:{
+			imagePath:"css/images/"
+		}
+	};
+	
 	$.extend(this.editmenu, this.unMenu);
 	$.extend(true, this.editmenu.menuInfo, this.unniurenMenuInfo);
 	$.extend(this.editbody.bodyInfo, this.unBodyInfo);
@@ -29,7 +34,7 @@ FNREditor.prototype.constructor = FNREditor;
 FNREditor.prototype.init = function(){
 	var self = this;
 	TNEditor.prototype.init.call(this);
-	$('head', self.editbody.cw.document).append('<link rel="stylesheet" href="css/unniurenforedit.css" />');//给编辑状态下的非牛人专线
+	$('head', self.editbody.cw.document).append('<link rel="stylesheet" href="'+this.properties.url.editableBoxCss+'" />');//给编辑状态下的非牛人专线
 	$('.'+self.unBodyInfo.section+'', self.editbody.cw.document).removeAttr('contenteditable').css('cursor','default');
 	$('.'+self.unBodyInfo.section+'', self.editbody.cw.document).unbind('paste');
 	$('.'+self.unBodyInfo.section+'', self.editbody.cw.document).after(self.unMenu.tripDelNode).after(self.unMenu.commonDelNode);
@@ -231,7 +236,7 @@ FNREditor.prototype.unniurenMenuInfo = {
 				$.ajax({
 					type: "POST",
 					dataType: "json",
-					url: "/myProject/TNEditor/imglist.js?r="+Math.random(),
+					url: self.properties.url.imgListUrl + "?r="+Math.random(),
 					data: this.getHtmlContentByDay(),
 					//url: "/main.php?r="+Math.random(),
 					//data: {
