@@ -43,6 +43,10 @@ SEditor.prototype.init = function(){
 
 	//test快速定位面板初始化
 	self.rapidPositioning.call(self);
+	//快速定位面板加宽
+	self.editbody.leftContainer.width(self.editbody.leftContainer.width() - 51);
+	self.editbody.rightToolPanel.width(self.editbody.rightToolPanel.width() + 50);
+
 }
 
 //读json配置
@@ -50,6 +54,7 @@ SEditor.prototype.readConfig = function(config){
 	var editContainer = this.editContainer = $(this.editbody.cw.document).find('.'+this.root);
 	editContainer.removeAttr('contenteditable');
 	var treeList = this.treeContainer = this.editbody.rightToolPanel.children('.rapidList').parent().empty();
+	this.addTreeToolbar(treeList);
 	readObject(config, editContainer, undefined);
 	this.createTree(editContainer.parent(), treeList);
 
@@ -122,6 +127,7 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 			wrapper = tree.find(leaf);
 		}else if(leaf){
 			wrapper = leaf;
+			wrapper.children(':not(:first)').remove();
 		}
 		var count = 0;
 		$.each(dom.children(), function(i,n){
@@ -139,7 +145,7 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 				if($(n).find('img').size() > 0){
 					li.text('img');
 				}else{
-					li.text($(n).text().slice(0,3) + '..');
+					li.text($(n).text().slice(0,5) + '..').css('padding-left','12px');
 				}
 				wrapper.append(li);
 			}else{
@@ -148,15 +154,46 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 				if(wrapper[0].nodeName.toUpperCase() == 'DIV'){
 					wrapper.append(ul);
 				}else{
-					var name = self.treeContainer.get(0).className;
+					var name = self.treeContainer.get(0).className.split(' ')[0];
 					var deep = wrapper.parentsUntil('.'+name).children('ul').size();//tree的深度用于节点收缩与伸展
-					var lix = $('<li><a>level' + deep + '</a></li>');
+					var div = $('<div><a class="toggleIcon spread"></a><a class="nodeLabel" href="javascript:void(0);">level' + deep + '</a></div>');
+					var lix = $('<li></li>').append(div);
 					lix.append(ul);
 					wrapper.append(lix);
+					div.children('.toggleIcon').unbind('click').click(function(e){
+						$(this).parent().next('ul').toggle();
+						$(this).toggleClass('spread collapse');
+					});
+					div.children('.nodeLabel').unbind('click').click(function(e){
+						//清除其他active
+						$(this).parents('.'+name).find('div').removeClass('active');
+						$(this).parent().toggleClass('active');
+					});
 				}
 				self.createTree($(n), ul, leaf);
 			}
 		})
+}
+
+SEditor.prototype.addTreeToolbar = function(treeList){
+	var self = this;
+	var toolbar = $('<ul class="treeToolbar"><li><a class="cloneBlock"></a></li><li><a class="delBlock"></a></li></ul>');
+	//加事件，clone and delete node
+	toolbar.unbind('click').click(function(e){
+		if($(e.target)[0].className == 'cloneBlock'){
+			var name = self.treeContainer.get(0).className.split(' ')[0];
+			var selected = $(this).next().find('.active').next();
+			var label = selected.attr('v-label');
+			var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+			console.debug(label,111111);
+			var beCloned =  self.editContainer.find('.'+label.split(' ')[0]).eq(index);
+			var clone = beCloned.clone();
+			beCloned.after(clone);
+			self.createTree(self.editContainer.parent(), self.treeContainer);
+		}
+	});
+
+	treeList.append(toolbar);
 }
 
 //把删除节点放到这里公用,也许这也可以用var变量来保存，作为私有属性(待重构)
