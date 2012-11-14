@@ -80,6 +80,11 @@ SEditor.prototype.readConfig = function(config){
 								fatherContainer.find(childContainer).attr('src',obj[k]);
 							}
 							break;
+						case 'title':
+							if(childContainer && fatherContainer){
+								fatherContainer.find(childContainer).attr('title',obj[k]);
+							}
+							break;
 						default:
 							if(childContainer && fatherContainer){
 								fatherContainer.find(childContainer).append(obj[k]);
@@ -117,7 +122,8 @@ SEditor.prototype.readConfig = function(config){
 	}	
 }
 
-//生成大纲:两种方案，根据标签来生成，根据json配置（需要有标记）生成【实验失败】
+//生成大纲:两种方案，根据标签来生成;根据json配置（需要有标记）生成【实验失败】
+//这里创建树和事件添加都加在一块了，需要拆解？
 SEditor.prototype.createTree = function(dom, leaf, tree){
 		var self = this;
 		var nodes = ("DIV,P,TABLE,UL,LI,DL,OL,FIELDSET,FORM,H1,H2,H3,H4,H5,H6,HR,PRE").split(',');//所有的块级元素
@@ -142,10 +148,14 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 			});
 			if(hasInline || ($(n).children().size() == 0)){
 				li.attr('v-label', n.className);
+				var path = self.properties.path.imagePath;
+				var icon = self.resManager.icon;
 				if($(n).find('img').size() > 0){
-					li.text('img');
+					var span = $('<span />').text($(n).find('img').attr('title').slice(0,5) + '..').css('cursor','default');
+					li.append(span).css({'padding-left':'28px','background':'url('+path+'/'+icon.img+') no-repeat 10px 2px'});
 				}else{
-					li.text($(n).text().slice(0,5) + '..').css('padding-left','12px');
+					var span = $('<span />').text($(n).text().slice(0,5) + '..').css('cursor','default');
+					li.append(span).css({'padding-left':'28px','background':'url('+path+'/'+icon.text+') no-repeat 10px 2px'});
 				}
 				wrapper.append(li);
 			}else{
@@ -177,16 +187,16 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 						var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
 						var docSelected = self.editContainer.find('[class="'+label+'"]').eq(index);
 						var margin = {
-							top: docSelected.css('marginTop'),
-							right: docSelected.css('marginRight'),
-							bottom: docSelected.css('marginBottom'),
-							left: docSelected.css('marginLeft')
+							top: parseInt(docSelected.css('marginTop')),
+							right: parseInt(docSelected.css('marginRight')),
+							bottom: parseInt(docSelected.css('marginBottom')),
+							left: parseInt(docSelected.css('marginLeft'))
 						}
 						var padding = {
-							top: docSelected.css('paddingTop'),
-							right: docSelected.css('paddingRight'),
-							bottom: docSelected.css('paddingBottom'),
-							left: docSelected.css('paddingLeft')
+							top: parseInt(docSelected.css('paddingTop')),
+							right: parseInt(docSelected.css('paddingRight')),
+							bottom: parseInt(docSelected.css('paddingBottom')),
+							left: parseInt(docSelected.css('paddingLeft'))
 						}
 						self.displayActivedBox(docSelected.offset().left, docSelected.offset().top, docSelected.width(), docSelected.height(), margin, padding);
 					});
@@ -232,15 +242,33 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 
 
 SEditor.prototype.displayActivedBox = function(left, top, width, height, margin, padding){
-	var activedBox = $('<div class="activedBox" style="position:absolute;left:'+(left-2)+'px;top:'+(top-2)+'px;width:'+width+'px;height:'+height+'px;border:2px solid #ddd;border-radius:4px;margin-top:'+margin.top+';margin-right:'+margin.right+';margin-bottom:'+margin.bottom+';margin-left:'+margin.left+';padding-top:'+padding.top+';padding-right:'+padding.right+';padding-bottom:'+padding.bottom+';padding-left:'+padding.left+';"></div>');
-	this.editContainer.append(activedBox);
+	//怎样让激活表示层不要阻隔事件传递到下层,本来想通过找办法让事件穿过这个层的，但是尝试无果。
+	//盒模型很重要哦~
+	var bw = 2;//bw = borderWidth
+	var bc = '#ccdce7';//borderColor
+	var activedBoxLeft = $('<div class="activedBoxLeft" style="position:absolute;left:'+(left-bw)+'px;top:'+(top-bw)+'px;width:'+bw+'px;height:'+(height+2*bw+padding.top+padding.bottom)+'px;background:'+bc+';"></div>');
+	var activedBoxTop = $('<div class="activedBoxTop" style="position:absolute;left:'+(left)+'px;top:'+(top-bw)+'px;width:'+(width+bw+padding.left+padding.right)+'px;height:'+bw+'px;background:'+bc+';"></div>');
+	var activedBoxRight = $('<div class="activedBoxTop" style="position:absolute;left:'+(left+bw+width+padding.left+padding.right)+'px;top:'+(top-bw)+'px;width:'+bw+'px;height:'+(height+2*bw+padding.top+padding.bottom)+'px;background:'+bc+';"></div>');
+	var activedBoxBottom = $('<div class="activedBoxBottom" style="position:absolute;left:'+(left)+'px;top:'+(top+height+padding.top+padding.bottom)+'px;width:'+(width+bw+padding.left+padding.right)+'px;height:'+bw+'px;background:'+bc+';"></div>');
+	this.editContainer.append(activedBoxLeft).append(activedBoxTop).append(activedBoxRight).append(activedBoxBottom);
 }
 
 SEditor.prototype.removeActivedBox = function(){
-	if(this.editContainer.find('[class="activedBox"]').size() > 0){
-		this.editContainer.find('[class="activedBox"]').remove();
+	if(this.editContainer.find('[class="activedBoxTop"]').size() > 0){
+		this.editContainer.find('[class="activedBoxTop"]').remove();
+		this.editContainer.find('[class="activedBoxRight"]').remove();
+		this.editContainer.find('[class="activedBoxBottom"]').remove();
+		this.editContainer.find('[class="activedBoxLeft"]').remove();
 	}
 }
+
+SEditor.prototype.resManager = {
+	icon: {
+		img: 'res_img.png',
+		text: 'res_text.png'
+	}
+}
+
 //把删除节点放到这里公用,也许这也可以用var变量来保存，作为私有属性(待重构)
 // SEditor.prototype.unMenu = {
 // 	tripDelNode: $('<div id="DelNode"><span class="upBlockSpan"><a class="upBlock" href="javascript:void(0);"></a></span><span class="downBlockSpan"><a class="downBlock" href="javascript:void(0);"></a></span><span class="deleteBlockSpan"><a class="deleteBlock" href="javascript:void(0);"></a></span></div>'),

@@ -49,7 +49,3 @@
 .downBlockSpan{display:block;float:left;width:16px;height:16px;margin:1px;padding:1px;border:1px solid rgba(255, 255, 255, 0);}
 .downBlock{background:url(images/down_grey.png) no-repeat;display:block;float:left;width:16px;height:16px;}
 .downBlock:hover{background:url(images/down.png) no-repeat;}
-
-
-
-.active{border:1px solid #0065A5;background: #ddd;}

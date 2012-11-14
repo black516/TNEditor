@@ -25,7 +25,8 @@
  					'li':[{
  						'a':{
  							'img':{
- 								'src':'http://images.tuniu.com/images/2006-07-30/4/4187UI1l64ymaEW4s.jpg'
+ 								'src':'http://images.tuniu.com/images/2006-07-30/4/4187UI1l64ymaEW4s.jpg',
+ 								'title':'秦淮河'
  							}
  						},
  						'div':{
