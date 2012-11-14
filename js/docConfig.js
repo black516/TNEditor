@@ -21,10 +21,10 @@
  						'text':'请在这里输入行程标题'
  					}
  				},
- 				'ul.time_s_photo clearfix':{
- 					'li':[{
+ 				'ul.time_s_photo clearfix':[{
+ 					'li':{
  						'a':{
- 							'img':{
+ 							'img#edit':{
  								'src':'http://images.tuniu.com/images/2006-07-30/4/4187UI1l64ymaEW4s.jpg',
  								'title':'秦淮河'
  							}
@@ -34,8 +34,22 @@
  								'text':'秦淮河'
  							}
  						}
- 					}]
+ 					}
  				},
+ 				{'li':{
+ 						'a':{
+ 							'img':{
+ 								'src':'http://images.tuniu.com/images/2006-07-30/4/4187UI1l64ymaEW4s.jpg',
+ 								'title':'沙河'
+ 							}
+ 						},
+ 						'div':{
+ 							'a#edit':{
+ 								'text':'沙河'
+ 							}
+ 						}
+ 					}
+ 				}],
  				'div.tour_line_f#edit':[{
  					'text':'请在这里输入行程描述，内容可以为“航班信息”、“游览路线”等相关内容'
  				}]

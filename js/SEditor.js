@@ -150,17 +150,58 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 				}
 			});
 			if(hasInline || ($(n).children().size() == 0 && $(n).text())){
-				li.attr('v-label', n.className);
+				//添加v-label标识
+				var label = new Date().getTime();
+				li.attr('v-label', label);
+				$(n).attr('v-label', label);
+				var active = '';
+				if($(n).attr('s-active')){
+					active = 'active';
+				}
+				li.addClass(active);	
+				//资源节点处理
 				var path = self.properties.path.imagePath;
 				var icon = self.resManager.icon;
 				if($(n).find('img').size() > 0){
 					var span = $('<span />').text($(n).find('img').attr('title').slice(0,5) + '..').css('cursor','default');
-					li.append(span).css({'padding-left':'28px','background':'url('+path+'/'+icon.img+') no-repeat 10px 2px'});
+					li.append(span).css({'padding-left':'28px','background-image':'url('+path+'/'+icon.img+')','background-repeat':'no-repeat','background-position':'10px 2px'});
 				}else{
 					var span = $('<span />').text($(n).text().slice(0,8) + '..').css('cursor','default');
-					li.append(span).css({'padding-left':'28px','background':'url('+path+'/'+icon.text+') no-repeat 10px 2px'});
+					li.append(span).css({'padding-left':'28px','background-image':'url('+path+'/'+icon.text+')','background-repeat':'no-repeat','background-position':'10px 2px'});
 				}
 				wrapper.append(li);
+
+				//节点事件处理
+				li.unbind('click').click(function(e){
+					var name = self.treeContainer.get(0).className.split(' ')[0];
+					//清除其他active
+					//清除文档的选中标记
+					$(this).parents('.'+name).find('.active').removeClass('active');
+					self.editContainer.find('[s-active="active"]').removeAttr('s-active');
+					self.removeActivedBox();
+					$(this).toggleClass('active');
+					//让文档相应部分也显示选中状态
+					var selected = $(this).parents('.' + name).find('[class="active"]');
+					var label = selected.attr('v-label');
+					var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+					var docSelected = self.editContainer.find('[v-label="'+label+'"]').eq(index);
+					//让文档记录树的active状态
+					docSelected.attr('s-active','active');
+
+					var margin = {
+						top: parseInt(docSelected.css('marginTop')),
+						right: parseInt(docSelected.css('marginRight')),
+						bottom: parseInt(docSelected.css('marginBottom')),
+						left: parseInt(docSelected.css('marginLeft'))
+					}
+					var padding = {
+						top: parseInt(docSelected.css('paddingTop')),
+						right: parseInt(docSelected.css('paddingRight')),
+						bottom: parseInt(docSelected.css('paddingBottom')),
+						left: parseInt(docSelected.css('paddingLeft'))
+					}
+					self.displayActivedBox(docSelected.offset().left, docSelected.offset().top, docSelected.width(), docSelected.height(), margin, padding);
+				})
 			}else{
 				// console.debug(n.className, wrapper, 8888);
 				ul.attr('v-label', n.className);
@@ -290,10 +331,57 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 			self.createTree(self.editContainer.parent(), self.treeContainer);
 		}
 		if($(e.target)[0].className == 'moveUp'){
-			
+			//针对普通节点的移动
+			//针对资源节点的移动，资源节点肯定是li标签
+			var name = self.treeContainer.get(0).className.split(' ')[0];
+			var selected, label, index, beMoved;
+			if($(this).next().find('[class="active"]')[0].nodeName.toUpperCase() == 'LI'){
+				selected = $(this).next().find('[class="active"]');
+				label = selected.attr('v-label');
+				index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+				beMoved =  self.editContainer.find('[v-label="'+label+'"]').eq(index);
+			}else{
+				selected = $(this).next().find('[class="active"]').next();
+				label = selected.attr('v-label');
+				index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+				beMoved =  self.editContainer.find('[class="'+label+'"]').eq(index);
+			}
+			var temp = beMoved.clone();
+			if(beMoved.prev().size() > 0){
+				beMoved.prev().before(temp);
+				beMoved.remove();
+				self.removeActivedBox();
+				self.createTree(self.editContainer.parent(), self.treeContainer);
+			}else{
+				self.editfooter.setStatusMsg('只能在相同级别元素间移动！');
+			}
+
 		}
 		if($(e.target)[0].className == 'moveDown'){
-
+			//针对普通节点的移动
+			//针对资源节点的移动，资源节点肯定是li标签
+			var name = self.treeContainer.get(0).className.split(' ')[0];
+			var selected, label, index, beMoved;
+			if($(this).next().find('[class="active"]')[0].nodeName.toUpperCase() == 'LI'){
+				selected = $(this).next().find('[class="active"]');
+				label = selected.attr('v-label');
+				index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+				beMoved =  self.editContainer.find('[v-label="'+label+'"]').eq(index);
+			}else{
+				selected = $(this).next().find('[class="active"]').next();
+				label = selected.attr('v-label');
+				index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+				beMoved =  self.editContainer.find('[class="'+label+'"]').eq(index);
+			}
+			var temp = beMoved.clone();
+			if(beMoved.next().size() > 0){
+				beMoved.next().after(temp);
+				beMoved.remove();
+				self.removeActivedBox();
+				self.createTree(self.editContainer.parent(), self.treeContainer);
+			}else{
+				self.editfooter.setStatusMsg('只能在相同级别元素间移动！');
+			}	
 		}
 		if($(e.target)[0].className == 'collapseTree'){
 			var ul = self.treeContainer.children().last().find('ul');

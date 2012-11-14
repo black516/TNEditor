@@ -37,16 +37,16 @@
 .rightToolPanel{float: left;background: #f9f9f9;border-right: 1px solid #ccc;font-size: 12px;}
 .rightToolPanel ul{text-align: left;margin:0;padding:0;}
 .rightToolPanel>ul{text-align: left;margin:10px 0 10px 0;padding:0;clear: both;}
-.rightToolPanel ul li{list-style: none;margin:0;padding: 2px 8px;clear: both;color:#666;}
+.rightToolPanel ul li{list-style: none;margin:0;padding: 2px 2px 2px 8px;clear: both;color:#666;border:1px solid #f9f9f9;}
 .rightToolPanel ul li div{width:100%;overflow:hidden;border:1px solid #f9f9f9;}
 .rightToolPanel ul li a.toggleIcon{display:block;float:left;width:16px;height:16px;text-decoration: none;color:#0065A5;cursor: pointer;}
 .collapse{background:url(images/collapse.png) no-repeat;}
 .spread{background:url(images/spread.png) no-repeat;}
 .rightToolPanel ul li a.nodeLabel{display:block;float:left;height:14px;text-decoration: none;color:#0065A5;}
-.active{border:1px solid #0065A5;background: #ddd;}
+.active{border:1px solid #0065A5;background-color: #ddd;}
 
 /*treetoolbar*/
-.rightToolPanel>ul.treeToolbar{margin:8px 8px 0 8px;padding:0;}
+.rightToolPanel>ul.treeToolbar{margin:8px 6px 0 8px;padding:0;}
 .rightToolPanel>ul.treeToolbar li{float: left;padding:2px;border:1px solid #f9f9f9;clear: none;}
 .rightToolPanel>ul.treeToolbar li a.addBlock{display:block;width:16px;height:16px;background:url(images/add.png) no-repeat;}
 .rightToolPanel>ul.treeToolbar li a.cloneBlock{display:block;width:16px;height:16px;background:url(images/copy.png) no-repeat;}
