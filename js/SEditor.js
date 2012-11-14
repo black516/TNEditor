@@ -20,6 +20,8 @@ function SEditor(opt){
 
 	//读配置文件，获得必要的信息
 	this.root = SEditorConfig.root;
+	//存储文档模板
+	this.docTemplate = undefined;
 	// $.extend(this.editmenu, this.unMenu);
 	// $.extend(true, this.editmenu.menuInfo, this.unniurenMenuInfo);
 	this.editbody.bodyInfo.section = this.root;
@@ -44,8 +46,8 @@ SEditor.prototype.init = function(){
 	//test快速定位面板初始化
 	self.rapidPositioning.call(self);
 	//快速定位面板加宽
-	self.editbody.leftContainer.width(self.editbody.leftContainer.width() - 51);
-	self.editbody.rightToolPanel.width(self.editbody.rightToolPanel.width() + 50);
+	self.editbody.leftContainer.width(self.editbody.leftContainer.width() - 81);
+	self.editbody.rightToolPanel.width(self.editbody.rightToolPanel.width() + 80);
 
 }
 
@@ -56,6 +58,7 @@ SEditor.prototype.readConfig = function(config){
 	var treeList = this.treeContainer = this.editbody.rightToolPanel.children('.rapidList').parent().empty();
 	this.addTreeToolbar(treeList);
 	readObject(config, editContainer, undefined);
+	this.docTemplate = editContainer.html();
 	this.createTree(editContainer.parent(), treeList);
 
 	//json生成html
@@ -146,7 +149,7 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 					hasInline = true;
 				}
 			});
-			if(hasInline || ($(n).children().size() == 0)){
+			if(hasInline || ($(n).children().size() == 0 && $(n).text())){
 				li.attr('v-label', n.className);
 				var path = self.properties.path.imagePath;
 				var icon = self.resManager.icon;
@@ -154,7 +157,7 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 					var span = $('<span />').text($(n).find('img').attr('title').slice(0,5) + '..').css('cursor','default');
 					li.append(span).css({'padding-left':'28px','background':'url('+path+'/'+icon.img+') no-repeat 10px 2px'});
 				}else{
-					var span = $('<span />').text($(n).text().slice(0,5) + '..').css('cursor','default');
+					var span = $('<span />').text($(n).text().slice(0,8) + '..').css('cursor','default');
 					li.append(span).css({'padding-left':'28px','background':'url('+path+'/'+icon.text+') no-repeat 10px 2px'});
 				}
 				wrapper.append(li);
@@ -166,19 +169,45 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 				}else{
 					var name = self.treeContainer.get(0).className.split(' ')[0];
 					var deep = wrapper.parentsUntil('.'+name).children('ul').size();//tree的深度用于节点收缩与伸展
-					var div = $('<div><a class="toggleIcon spread"></a><a class="nodeLabel" href="javascript:void(0);">level' + deep + '</a></div>');
+					var status = 'spread';
+					var active = '';
+					var statusX = $(n).attr('s-collapse-status');
+					if(statusX == 'collapse'){
+						status = 'collapse';
+						ul.hide();
+					}else if(statusX == 'spread'){
+						status = 'spread';
+						ul.show();
+					}
+					if($(n).attr('s-active')){
+						active = 'active';
+					}
+					var div = $('<div class="'+active+'"><a class="toggleIcon '+status+'"></a><a class="nodeLabel" href="javascript:void(0);">level' + deep + '</a></div>');
 					var lix = $('<li></li>').append(div);
 					lix.append(ul);
 					wrapper.append(lix);
+
+					//collapse 按钮
 					div.children('.toggleIcon').unbind('click').click(function(e){
+						div.children('.nodeLabel').trigger('click');
 						$(this).parent().next('ul').toggle();
 						$(this).toggleClass('spread collapse');
+						//让文档记录树的collapse状态
+						var selected = $(this).parents('.' + name).find('[class="active"]').next();
+						var label = selected.attr('v-label');
+						var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+						var docSelected = self.editContainer.find('[class="'+label+'"]').eq(index);
+						var status = $.inArray('collapse',$(this).attr('class').split(' ')) == -1 ? 'spread' : 'collapse';
+						docSelected.attr('s-collapse-status',status);
 					});
+
+					//激活按钮
 					div.children('.nodeLabel').unbind('click').click(function(e){
-						//清除其他active
 						var name = self.treeContainer.get(0).className.split(' ')[0];
+						//清除其他active
 						//清除文档的选中标记
 						$(this).parents('.'+name).find('div').removeClass('active');
+						self.editContainer.find('[s-active="active"]').removeAttr('s-active');
 						self.removeActivedBox();
 						$(this).parent().toggleClass('active');
 						//让文档相应部分也显示选中状态
@@ -186,6 +215,9 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 						var label = selected.attr('v-label');
 						var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
 						var docSelected = self.editContainer.find('[class="'+label+'"]').eq(index);
+						//让文档记录树的active状态
+						docSelected.attr('s-active','active');
+
 						var margin = {
 							top: parseInt(docSelected.css('marginTop')),
 							right: parseInt(docSelected.css('marginRight')),
@@ -208,9 +240,30 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 
 SEditor.prototype.addTreeToolbar = function(treeList){
 	var self = this;
-	var toolbar = $('<ul class="treeToolbar"><li><a class="cloneBlock"></a></li><li><a class="delBlock"></a></li></ul>');
+	var toolbar = $('<ul class="treeToolbar"><li><a class="addBlock"></a></li><li><a class="cloneBlock"></a></li><li><a class="delBlock"></a></li><li><a class="moveUp"></a></li><li><a class="moveDown"></a></li><li style="float:right;"><a class="collapseTree"></a></li><li style="float:right;"><a class="refreshTree"></a></li></ul>');
 	//加事件，clone and delete node
 	toolbar.unbind('click').click(function(e){
+		//用switch case改写并拆解
+		if($(e.target)[0].className == 'addBlock'){
+			var name = self.treeContainer.get(0).className.split(' ')[0];
+			var label = $(self.docTemplate).attr('class');
+			var selected;
+			if($(this).next().find('[class="active"]').next().attr('v-label') == label){
+				selected = $(this).next().find('[class="active"]').next();
+			}else{
+				selected = $(this).next().find('[class="active"]').parents('[v-label="'+label+'"]');
+			} 
+			var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+			//如果有的话after，没有的话就append
+			if(self.editContainer.find('[class="'+label+'"]').size() > 0){
+				var beAdded =  self.editContainer.find('[class="'+label+'"]').eq(index);
+				beAdded.after(self.docTemplate);
+			}else{
+				self.editContainer.append(self.docTemplate);
+			}
+			self.removeActivedBox();
+			self.createTree(self.editContainer.parent(), self.treeContainer);
+		}
 		if($(e.target)[0].className == 'cloneBlock'){
 			var name = self.treeContainer.get(0).className.split(' ')[0];
 			var selected = $(this).next().find('[class="active"]').next();
@@ -221,6 +274,7 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 			var beCloned =  self.editContainer.find('[class="'+label+'"]').eq(index);
 			var clone = beCloned.clone();
 			beCloned.after(clone);
+			self.removeActivedBox();
 			self.createTree(self.editContainer.parent(), self.treeContainer);
 		}
 		if($(e.target)[0].className == 'delBlock'){
@@ -232,6 +286,23 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 			//在删除前最好先保存下用localStorage(TODO...)
 			//这边做撤销远远比做弹框好，弹框相当影响用户操作效率
 			beDeleteed.remove();
+			self.removeActivedBox();
+			self.createTree(self.editContainer.parent(), self.treeContainer);
+		}
+		if($(e.target)[0].className == 'moveUp'){
+			
+		}
+		if($(e.target)[0].className == 'moveDown'){
+
+		}
+		if($(e.target)[0].className == 'collapseTree'){
+			var ul = self.treeContainer.children().last().find('ul');
+			$.each(ul,function(i,n){
+				$(n).hide();
+				$(n).prev().children().first().removeClass('spread').addClass('collapse');
+			});
+		}
+		if($(e.target)[0].className == 'refreshTree'){
 			self.removeActivedBox();
 			self.createTree(self.editContainer.parent(), self.treeContainer);
 		}

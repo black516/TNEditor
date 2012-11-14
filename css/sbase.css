@@ -46,8 +46,13 @@
 .active{border:1px solid #0065A5;background: #ddd;}
 
 /*treetoolbar*/
-.rightToolPanel>ul.treeToolbar{margin:10px 0 0 10px;padding:0;}
+.rightToolPanel>ul.treeToolbar{margin:8px 8px 0 8px;padding:0;}
 .rightToolPanel>ul.treeToolbar li{float: left;padding:2px;border:1px solid #f9f9f9;clear: none;}
+.rightToolPanel>ul.treeToolbar li a.addBlock{display:block;width:16px;height:16px;background:url(images/add.png) no-repeat;}
 .rightToolPanel>ul.treeToolbar li a.cloneBlock{display:block;width:16px;height:16px;background:url(images/copy.png) no-repeat;}
-.rightToolPanel>ul.treeToolbar li:hover{background: #fff;border:1px solid #eee;cursor: pointer;}
 .rightToolPanel>ul.treeToolbar li a.delBlock{display:block;width:16px;height:16px;background:url(images/deleteBlock.png) no-repeat;}
+.rightToolPanel>ul.treeToolbar li a.moveUp{display:block;width:16px;height:16px;background:url(images/arrow_up.png) no-repeat;}
+.rightToolPanel>ul.treeToolbar li a.moveDown{display:block;width:16px;height:16px;background:url(images/arrow_down.png) no-repeat;}
+.rightToolPanel>ul.treeToolbar li a.refreshTree{display:block;width:16px;height:16px;background:url(images/reload.png) no-repeat;}
+.rightToolPanel>ul.treeToolbar li a.collapseTree{display:block;width:16px;height:16px;background:url(images/collapseAll.png) no-repeat;}
+.rightToolPanel>ul.treeToolbar li:hover{background: #fff;border:1px solid #eee;cursor: pointer;}
