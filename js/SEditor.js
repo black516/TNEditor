@@ -51,8 +51,8 @@ SEditor.prototype.init = function(){
 
 //读json配置
 SEditor.prototype.readConfig = function(config){
-	var editContainer = this.editContainer = $(this.editbody.cw.document).find('.'+this.root);
-	editContainer.removeAttr('contenteditable');
+	var editContainer = this.editContainer = $(this.editbody.cw.document).find('[class="'+this.root+'"]');
+	editContainer.removeAttr('contenteditable').removeAttr('spellcheck').css('cursor','auto');
 	var treeList = this.treeContainer = this.editbody.rightToolPanel.children('.rapidList').parent().empty();
 	this.addTreeToolbar(treeList);
 	readObject(config, editContainer, undefined);
@@ -166,8 +166,29 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 					});
 					div.children('.nodeLabel').unbind('click').click(function(e){
 						//清除其他active
+						var name = self.treeContainer.get(0).className.split(' ')[0];
+						//清除文档的选中标记
 						$(this).parents('.'+name).find('div').removeClass('active');
+						self.removeActivedBox();
 						$(this).parent().toggleClass('active');
+						//让文档相应部分也显示选中状态
+						var selected = $(this).parents('.' + name).find('[class="active"]').next();
+						var label = selected.attr('v-label');
+						var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+						var docSelected = self.editContainer.find('[class="'+label+'"]').eq(index);
+						var margin = {
+							top: docSelected.css('marginTop'),
+							right: docSelected.css('marginRight'),
+							bottom: docSelected.css('marginBottom'),
+							left: docSelected.css('marginLeft')
+						}
+						var padding = {
+							top: docSelected.css('paddingTop'),
+							right: docSelected.css('paddingRight'),
+							bottom: docSelected.css('paddingBottom'),
+							left: docSelected.css('paddingLeft')
+						}
+						self.displayActivedBox(docSelected.offset().left, docSelected.offset().top, docSelected.width(), docSelected.height(), margin, padding);
 					});
 				}
 				self.createTree($(n), ul, leaf);
@@ -182,13 +203,26 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 	toolbar.unbind('click').click(function(e){
 		if($(e.target)[0].className == 'cloneBlock'){
 			var name = self.treeContainer.get(0).className.split(' ')[0];
-			var selected = $(this).next().find('.active').next();
+			var selected = $(this).next().find('[class="active"]').next();
 			var label = selected.attr('v-label');
+			//这里find函数的选择器没有用'.xxxx'的形式，主要是因为该方法在Chrome中有bug
 			var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
 			console.debug(label,111111);
-			var beCloned =  self.editContainer.find('.'+label.split(' ')[0]).eq(index);
+			var beCloned =  self.editContainer.find('[class="'+label+'"]').eq(index);
 			var clone = beCloned.clone();
 			beCloned.after(clone);
+			self.createTree(self.editContainer.parent(), self.treeContainer);
+		}
+		if($(e.target)[0].className == 'delBlock'){
+			var name = self.treeContainer.get(0).className.split(' ')[0];
+			var selected = $(this).next().find('[class="active"]').next();
+			var label = selected.attr('v-label');
+			var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
+			var beDeleteed =  self.editContainer.find('[class="'+label+'"]').eq(index);
+			//在删除前最好先保存下用localStorage(TODO...)
+			//这边做撤销远远比做弹框好，弹框相当影响用户操作效率
+			beDeleteed.remove();
+			self.removeActivedBox();
 			self.createTree(self.editContainer.parent(), self.treeContainer);
 		}
 	});
@@ -196,6 +230,17 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 	treeList.append(toolbar);
 }
 
+
+SEditor.prototype.displayActivedBox = function(left, top, width, height, margin, padding){
+	var activedBox = $('<div class="activedBox" style="position:absolute;left:'+(left-2)+'px;top:'+(top-2)+'px;width:'+width+'px;height:'+height+'px;border:2px solid #ddd;border-radius:4px;margin-top:'+margin.top+';margin-right:'+margin.right+';margin-bottom:'+margin.bottom+';margin-left:'+margin.left+';padding-top:'+padding.top+';padding-right:'+padding.right+';padding-bottom:'+padding.bottom+';padding-left:'+padding.left+';"></div>');
+	this.editContainer.append(activedBox);
+}
+
+SEditor.prototype.removeActivedBox = function(){
+	if(this.editContainer.find('[class="activedBox"]').size() > 0){
+		this.editContainer.find('[class="activedBox"]').remove();
+	}
+}
 //把删除节点放到这里公用,也许这也可以用var变量来保存，作为私有属性(待重构)
 // SEditor.prototype.unMenu = {
 // 	tripDelNode: $('<div id="DelNode"><span class="upBlockSpan"><a class="upBlock" href="javascript:void(0);"></a></span><span class="downBlockSpan"><a class="downBlock" href="javascript:void(0);"></a></span><span class="deleteBlockSpan"><a class="deleteBlock" href="javascript:void(0);"></a></span></div>'),
