@@ -163,10 +163,10 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 				var path = self.properties.path.imagePath;
 				var icon = self.resManager.icon;
 				if($(n).find('img').size() > 0){
-					var span = $('<span />').text($(n).find('img').attr('title').slice(0,5) + '..').css('cursor','default');
+					var span = $('<span />').text($(n).find('img').attr('title').slice(0,5) + '..').css('cursor','pointer');
 					li.append(span).css({'padding-left':'28px','background-image':'url('+path+'/'+icon.img+')','background-repeat':'no-repeat','background-position':'10px 2px'});
 				}else{
-					var span = $('<span />').text($(n).text().slice(0,8) + '..').css('cursor','default');
+					var span = $('<span />').text($(n).text().slice(0,8) + '..').css('cursor','pointer');
 					li.append(span).css({'padding-left':'28px','background-image':'url('+path+'/'+icon.text+')','background-repeat':'no-repeat','background-position':'10px 2px'});
 				}
 				wrapper.append(li);
@@ -201,6 +201,11 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 						left: parseInt(docSelected.css('paddingLeft'))
 					}
 					self.displayActivedBox(docSelected.offset().left, docSelected.offset().top, docSelected.width(), docSelected.height(), margin, padding);
+
+					//快速定位
+					var top = docSelected.offset().top;
+					//使用一个动画来使页面跳转到相应位置。
+					$('body',self.editbody.cw.document).animate({scrollTop:top-2}, 500);
 				})
 			}else{
 				// console.debug(n.className, wrapper, 8888);
@@ -272,6 +277,11 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 							left: parseInt(docSelected.css('paddingLeft'))
 						}
 						self.displayActivedBox(docSelected.offset().left, docSelected.offset().top, docSelected.width(), docSelected.height(), margin, padding);
+
+						//快速定位
+						var top = docSelected.offset().top;
+						//使用一个动画来使页面跳转到相应位置。
+						$('body',self.editbody.cw.document).animate({scrollTop:top-2}, 500);
 					});
 				}
 				self.createTree($(n), ul, leaf);
