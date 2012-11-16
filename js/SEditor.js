@@ -209,7 +209,10 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 				})
 			}else{
 				// console.debug(n.className, wrapper, 8888);
-				ul.attr('v-label', n.className);
+				//添加v-label标识
+				var label = new Date().getTime();//用这种方法来生成唯一标识符有待商榷
+				ul.attr('v-label', label);
+				$(n).attr('v-label', label);
 				if(wrapper[0].nodeName.toUpperCase() == 'DIV'){
 					wrapper.append(ul);
 				}else{
@@ -242,7 +245,7 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 						var selected = $(this).parents('.' + name).find('[class="active"]').next();
 						var label = selected.attr('v-label');
 						var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
-						var docSelected = self.editContainer.find('[class="'+label+'"]').eq(index);
+						var docSelected = self.editContainer.find('[v-label="'+label+'"]').eq(index);
 						var status = $.inArray('collapse',$(this).attr('class').split(' ')) == -1 ? 'spread' : 'collapse';
 						docSelected.attr('s-collapse-status',status);
 					});
@@ -260,7 +263,7 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 						var selected = $(this).parents('.' + name).find('[class="active"]').next();
 						var label = selected.attr('v-label');
 						var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
-						var docSelected = self.editContainer.find('[class="'+label+'"]').eq(index);
+						var docSelected = self.editContainer.find('[v-label="'+label+'"]').eq(index);
 						//让文档记录树的active状态
 						docSelected.attr('s-active','active');
 
@@ -306,8 +309,8 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 			} 
 			var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
 			//如果有的话after，没有的话就append
-			if(self.editContainer.find('[class="'+label+'"]').size() > 0){
-				var beAdded =  self.editContainer.find('[class="'+label+'"]').eq(index);
+			if(self.editContainer.find('[v-label="'+label+'"]').size() > 0){
+				var beAdded =  self.editContainer.find('[v-label="'+label+'"]').eq(index);
 				beAdded.after(self.docTemplate);
 			}else{
 				self.editContainer.append(self.docTemplate);
@@ -317,13 +320,19 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 		}
 		if($(e.target)[0].className == 'cloneBlock'){
 			var name = self.treeContainer.get(0).className.split(' ')[0];
-			var selected = $(this).next().find('[class="active"]').next();
+			//这边要考虑资源节点
+			var selected;
+			if($(this).next().find('[class="active"]')[0].nodeName.toUpperCase() == 'LI'){
+				selected = $(this).next().find('[class="active"]');
+			}else{
+				selected = $(this).next().find('[class="active"]').next();
+			}
 			var label = selected.attr('v-label');
 			//这里find函数的选择器没有用'.xxxx'的形式，主要是因为该方法在Chrome中有bug
 			var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
 			console.debug(label,111111);
-			var beCloned =  self.editContainer.find('[class="'+label+'"]').eq(index);
-			var clone = beCloned.clone();
+			var beCloned =  self.editContainer.find('[v-label="'+label+'"]').eq(index);
+			var clone = beCloned.clone().removeAttr('s-active');
 			beCloned.after(clone);
 			self.removeActivedBox();
 			self.createTree(self.editContainer.parent(), self.treeContainer);
@@ -333,7 +342,7 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 			var selected = $(this).next().find('[class="active"]').next();
 			var label = selected.attr('v-label');
 			var index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
-			var beDeleteed =  self.editContainer.find('[class="'+label+'"]').eq(index);
+			var beDeleteed =  self.editContainer.find('[v-label="'+label+'"]').eq(index);
 			//在删除前最好先保存下用localStorage(TODO...)
 			//这边做撤销远远比做弹框好，弹框相当影响用户操作效率
 			beDeleteed.remove();
@@ -354,7 +363,7 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 				selected = $(this).next().find('[class="active"]').next();
 				label = selected.attr('v-label');
 				index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
-				beMoved =  self.editContainer.find('[class="'+label+'"]').eq(index);
+				beMoved =  self.editContainer.find('[v-label="'+label+'"]').eq(index);
 			}
 			var temp = beMoved.clone();
 			if(beMoved.prev().size() > 0){
@@ -381,7 +390,7 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 				selected = $(this).next().find('[class="active"]').next();
 				label = selected.attr('v-label');
 				index = $(this).parents('.'+name).find('[v-label="'+label+'"]').index(selected);
-				beMoved =  self.editContainer.find('[class="'+label+'"]').eq(index);
+				beMoved =  self.editContainer.find('[v-label="'+label+'"]').eq(index);
 			}
 			var temp = beMoved.clone();
 			if(beMoved.next().size() > 0){
