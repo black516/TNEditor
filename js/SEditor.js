@@ -247,7 +247,7 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 						var name = self.treeContainer.get(0).className.split(' ')[0];
 						//清除其他active
 						//清除文档的选中标记
-						$(this).parents('.'+name).find('div').removeClass('active');
+						$(this).parents('.'+name).find('.active').removeClass('active');
 						self.editContainer.find('[s-active="active"]').removeAttr('s-active');
 						self.removeActivedBox();
 						$(this).parent().toggleClass('active');
