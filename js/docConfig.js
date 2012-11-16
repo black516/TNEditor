@@ -25,7 +25,7 @@
  					'li':{
  						'a':{
  							'img#edit':{
- 								'src':'http://images.tuniu.com/images/2006-07-30/4/4187UI1l64ymaEW4s.jpg',
+ 								'src':'http://list.image.baidu.com/t/image/w_mengchong.jpg',
  								'title':'秦淮河'
  							}
  						},

@@ -12,7 +12,7 @@
 .tourSection_unniuren .day_title_new{ color:#f60; font-size:12px;}
 .tourSection_unniuren .day_title_new .time_s_photo{ padding:0; margin:0;}
 .tourSection_unniuren .day_title_new .time_s_photo li{ border:1px solid #F9FEF6; float:left; width:81px; padding:1px; margin:0 10px 5px 0; display:inline; overflow:hidden;}
-.tourSection_unniuren .day_title_new .time_s_photo li img{ border:1px solid #999; padding:2px;}
+.tourSection_unniuren .day_title_new .time_s_photo li img{ border:1px solid #999; padding:2px; width:75px;height:75px;}
 .tourSection_unniuren .day_title_new .time_s_photo li div{ display:block; padding-top:5px; text-align:center; overflow:hidden; font-size:12px; width:81px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 
 .tourSection_unniuren .day_title_new h3{ border-top: border-top:1px dashed #ddd; font-weight:700; margin:10px 0 10px; font-size:100%; zoom:1; float:none; padding:10px 0 0 0!important; background:none!important; width:100%!important; color:#f60!important;}
