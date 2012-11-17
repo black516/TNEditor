@@ -11,6 +11,7 @@ function SEditor(opt){
 	
 	// $.extend(true, opt, defaults);
 	$.merge(opt.base,defaults.base);
+	$.extend(this, opt);
 	TNEditor.call(this, opt);
 	/*这里放置编辑器的各种配置*/
 	this.properties = {
@@ -24,14 +25,16 @@ function SEditor(opt){
 		}
 	};
 
-	//读配置文件，获得必要的信息
-	this.root = SEditorConfig.root;
+	//读配置，获得必要的信息
+	this.root = this.template.root;
+	//存储可编辑的选择器
+	this.editableSelectors = [];
 	//存储文档模板
 	this.docTemplate = undefined;
 	this.editbody.bodyInfo.section = this.root;
 
 	this.init();
-	this.readConfig(SEditorConfig.content);
+	this.readConfig(this.template.content);
 }
 SEditor.prototype = new TNEditor();
 SEditor.prototype.constructor = SEditor;
@@ -115,13 +118,35 @@ SEditor.prototype.readObject = function(obj, childContainer, fatherContainer){
 				className = temp.split('.')[1];
 				var element = $(document.createElement(dom)).addClass(className);
 				//文本可编辑
-				if(editable) element.attr('contenteditable','true');
+				if(editable){
+					element.attr('contenteditable','true');
+				}
 				console.debug(childContainer,9999);
 				if(childContainer && fatherContainer){
 					fatherContainer.find(childContainer).append(element);
 				}else if(childContainer){
 					childContainer.append(element);
 				}
+				
+				if(editable){
+					var selector = '';
+					if(element[0].className){
+						selector += '.'+element[0].className.split(' ')[0];
+					}else{
+						selector += element[0].nodeName;
+					}
+					element.parentsUntil('[class="'+self.root+'"]').each(function(i,n){
+						if(n.className){
+							selector += ' .'+n.className.split(' ')[0];
+						}else{
+							selector += ' '+n.nodeName;
+						}
+					});
+					selector = selector.split(' ').reverse().join(' ');
+					self.editableSelectors.push(selector);
+					console.debug(self.editableSelectors,99999);
+				}
+				
 
 				//如果可编辑的是图片，那么添加如下事件，让用户可以给图片加url
 				if(element[0].nodeName.toUpperCase() == 'IMG'){
@@ -162,7 +187,7 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 					hasInline = true;
 				}
 			});
-			//如果当前DOM元素包含行内元素，或者当前DOM元素没有子节点且有文本节点的话，就把节点当做“资源节点”
+			//如果当前DOM元素包含行内元素，或者当前DOM元素没有子节点且有文本节点的话，就把节点当做“资源节点”.!!!这边用jquery的contents()方法是不是更好些？
 			if(hasInline || ($(n).children().size() == 0 && $(n).text())){
 				//添加v-label标识
 				var label = GUID.guid();
@@ -178,8 +203,17 @@ SEditor.prototype.createTree = function(dom, leaf, tree){
 				var path = self.properties.path.imagePath;
 				var icon = self.resManager.icon;
 				if($(n).find('img').size() > 0){
-					var span = $('<span />').text($(n).find('img').attr('title').slice(0,5) + '..').css('cursor','pointer');
-					li.append(span).css({'padding-left':'28px','background-image':'url('+path+'/'+icon.img+')','background-repeat':'no-repeat','background-position':'10px 2px'});
+					var span;
+					if($(n).find('img').attr('title')){
+						span = $('<span />').text($(n).find('img').attr('title').slice(0,5) + '..').css('cursor','pointer');
+					}else{
+						span = $('<span />').text('图片').css('cursor','pointer');
+					}
+					var spanText = $('');
+					if($(n).text()){
+						spanText = $('<span />').text($(n).text().slice(0,8) + '..').css('cursor','pointer');
+					}
+					li.append(span).append(spanText).css({'padding-left':'28px','background-image':'url('+path+'/'+icon.img+')','background-repeat':'no-repeat','background-position':'10px 2px'});
 				}else{
 					var span = $('<span />').text($(n).text().slice(0,8) + '..').css('cursor','pointer');
 					li.append(span).css({'padding-left':'28px','background-image':'url('+path+'/'+icon.text+')','background-repeat':'no-repeat','background-position':'10px 2px'});
@@ -490,4 +524,39 @@ SEditor.prototype.rapidPositioning = function (){
 	self.editbody.rightToolPanel.css({'height':self.height - 60,'width':'97px'});
 	var list = $('<ul class="rapidList"></ul>');
 	self.editbody.rightToolPanel.append(list);
+}
+
+//用于获取文档内容保存到其他地方
+SEditor.prototype.getHtmlContent = function(flag){
+	var self = this;
+	var section = null;
+	if (flag){
+		section = $('.' + self.editbody.bodyInfo.section,self.editbody.cw.document).parent().clone();
+		$('div[contenteditable=true]', section).removeAttr('contenteditable');
+	}else{
+		section = $('.' + self.editbody.bodyInfo.section,self.editbody.cw.document).clone();
+	}
+	//hack 去掉保存不慎加入的一些操作提示样式。
+	section.find('[v-label]').each(function(i,n){
+		$(n).removeAttr('v-label');
+	});
+	return section.html();
+}
+
+//用于显示以前保存过的html
+SEditor.prototype.setHtmlContent = function(content){
+	var self = this;
+	$('.'+self.editbody.bodyInfo.section, self.editbody.cw.document).empty().html($(content).html());
+	//可编辑区域怎么附加属性？通过json配置读出来{生成可编辑DOM的选择器}
+	$.each(self.editableSelectors,function(i,n){
+		var element = self.editContainer.find(n);
+		element.attr('contenteditable','true');
+		if(element[0] && element[0].nodeName.toUpperCase() == 'IMG'){
+			element.css('cursor','pointer');
+				element.click(function(e){
+				self.editImage(e);
+			});
+		}		
+	});
+	self.createTree(self.editContainer.parent(), self.treeContainer);
 }
