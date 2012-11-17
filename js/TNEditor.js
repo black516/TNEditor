@@ -25,6 +25,7 @@ function TNEditor(opt){
 	this.properties = {
 		url:{
 			editorCss:"css/base.css",
+			previewCss:"css/base.css",
 			editableBoxCss:"css/editableIframe.css"
 		},
 		path:{
@@ -290,7 +291,7 @@ editMenu.prototype.menuInfo = {
 		preview: function(){
 			var self = this;
 			var win = window.open("about:blank");
-			win.document.write('<html><head><link type="text/css" rel="stylesheet" href="'+this.properties.url.editorCss+'" /></head><body>'+self.editmenu.editbody.bodyEvent.getHtmlContent.call(self.editmenu, true)+'</body></html>');
+			win.document.write('<html><head><link type="text/css" rel="stylesheet" href="'+this.properties.url.previewCss+'" /></head><body>'+self.editmenu.editbody.bodyEvent.getHtmlContent.call(self.editmenu, true)+'</body></html>');
 			win.document.close();
 		},
 		editModeTrans: function(e){

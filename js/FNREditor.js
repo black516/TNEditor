@@ -10,6 +10,7 @@ function FNREditor(opt){
 	this.properties = {
 		url:{
 			editorCss:"css/base.css",
+			previewCss:"css/unniuren.css",
 			editableBoxCss:"css/unniurenforedit.css",
 			imgListUrl:"/myProject/TNEditor/imglist.js"
 		},
@@ -114,7 +115,7 @@ FNREditor.prototype.unniurenMenuInfo = {
 		preview: function(){
 			var self = this;
 			var win = window.open("about:blank");
-			win.document.write('<html><head><link type="text/css" rel="stylesheet" href="css/unniuren.css" /></head><body>'+self.editmenu.editbody.bodyEvent.getHtmlContent.call(self.editmenu, true)+'</body></html>');
+			win.document.write('<html><head><link type="text/css" rel="stylesheet" href="'+self.properties.url.previewCss+'" /></head><body>'+self.editmenu.editbody.bodyEvent.getHtmlContent.call(self.editmenu, true)+'</body></html>');
 			win.document.close();
 		},
 		addBusAction: function(){

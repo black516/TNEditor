@@ -96,3 +96,76 @@
  		}]
  	}
  }
+
+ var niurenConfig = {
+ 	root: 'tourSection_niuren',
+ 	content: {
+ 		'div.tourContent_new':[{
+ 			'div.day_title_new':{
+ 				'h3':{
+ 					'em':{
+ 						'text':'第1天'
+ 					},
+ 					'div#edit':{
+ 						'text':'请在这里输入行程标题'
+ 					}
+ 				}
+ 			},
+ 			'div.time_box_inner clearfix':[{
+ 				'div.time_num':{
+ 					'div.tour_con#edit':{
+ 						'text':'输入时间'
+ 					}
+ 				}
+ 			},{
+ 				'div.time_do_new':[{
+ 					'div.tour_description#edit':{
+ 						'text':'请在这里输入行程时间段描述'
+ 					}
+ 				},{
+ 					'div.tour_con_h4#edit':{
+ 						'text':'请在这里输入行程小标题'
+ 					}
+ 				},{
+ 					'div.tour_con#edit':{
+ 						'text':'请在这里输入行程小标题正文'
+ 					}
+ 				},{
+ 					'ul.time_img_photo clearfix':[{
+ 						'li':{
+ 							'a.niuren_light':{
+ 								'img#edit':{
+ 									'src':'http://images.tuniu.com/images/2010-05-27/b/b6z2c08XM5pdG9Y7n.jpg'
+ 								}
+ 							},
+ 							'div#edit':{
+ 								'text':'图片标题'
+ 							}
+ 						}
+ 					}]
+ 				}]
+ 			}],
+ 			'div.tour_food':[
+ 				{
+	 				'div.tour_item':{
+	 					'em':{
+	 						'text':'用餐'
+	 					},
+	 					'div#edit':{
+	 						'text':'早餐: 敬请自理  午餐: 敬请自理  晚餐: 敬请自理'
+	 					}
+	 				}
+	 			},
+ 				{
+	 				'div.tour_item':{
+	 					'em':{
+	 						'text':'住宿'
+	 					},
+	 					'div#edit':{
+	 						'text':'三亚：玉海国际或仙居府海景双标间'
+	 					}
+	 				}
+ 				}]
+ 		}]
+ 	}
+ }

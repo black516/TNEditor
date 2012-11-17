@@ -17,8 +17,8 @@ function SEditor(opt){
 	this.properties = {
 		url:{
 			editorCss:"css/sbase.css",
-			editableBoxCss:"css/unniurenforedit.css",
-			imgListUrl:"/myProject/TNEditor/imglist.js"
+			previewCss: this.cssforpreview,
+			editableBoxCss: this.cssforeditor
 		},
 		path:{
 			imagePath:"css/images/"
@@ -294,6 +294,13 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 				}else{
 					self.editContainer.append(self.docTemplate);
 				}
+				//给图片加上可编辑事件
+				self.editContainer.find('img[contenteditable="true"]').each(function(i,n){
+					$(n).unbind('click').click(function(e){
+						self.editImage(e);
+					});
+				});
+
 				self.removeActivedBox();
 				self.createTree(self.editContainer.parent(), self.treeContainer);
 				break;
@@ -311,6 +318,13 @@ SEditor.prototype.addTreeToolbar = function(treeList){
 				var beCloned =  self.editContainer.find('[v-label="'+label+'"]').eq(index);
 				var clone = beCloned.clone().removeAttr('s-active');
 				beCloned.after(clone);
+				//给图片加上可编辑事件
+				self.editContainer.find('img[contenteditable="true"]').each(function(i,n){
+					$(n).unbind('click').click(function(e){
+						self.editImage(e);
+					});
+				});
+
 				self.removeActivedBox();
 				self.createTree(self.editContainer.parent(), self.treeContainer);
 				break;
@@ -489,7 +503,7 @@ SEditor.prototype.editImage = function(e){
 	var pos = $(e.target).position();
 	var posOffset = self.editbody.baseSection.position();
 	pos.left = pos.left + posOffset.left;
-	pos.top = pos.top + posOffset.top;
+	pos.top = pos.top + posOffset.top - $(self.editbody.cw.document).scrollTop();//需要考虑到编辑区域滚动条的距离影响
 	self.editmenu.displayPopWin(pos,popBox);
 	$(document.body).append(self.editmenu.popWin);
 	self.editmenu.popWin.show();
